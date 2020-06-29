@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+    }
+</style>
+
+<body onload="">
+    <h1>Beers</h1>
+    <button onclick="print()">Show next 50 beers</button>
+    <table id="table">
+
+    </table>
+</body>
+<script>
+    const ISFINISHED = 4;
+    const ISOK = 200;
+    var api_key = "32isbi7Lug22v8CKogygf5b2EZwpdFhS2OotvWem";
+    var api_link = "https://rsd05guo67.execute-api.us-east-2.amazonaws.com/default/beerstore";
+    var aBeer = [];
+    var beer;
+    var from = 0;
+    var to = 50;
+    var counter = 1;
+
+    function init()  {
+
+    }
+
+    function getJSONAsync(url) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (request.readyState === ISFINISHED && request.status === ISOK) {
+                // convert the returned data to a JavaScript object
+                // use the Chrome debugger to inspect this variable
+                beer = JSON.parse(request.responseText);
+                for (var i = 0; i < beer.length; i++) {
+                    aBeer.push(new Beer(
+                        beer[i].name,
+                        beer[i].image_url,
+                        beer[i].type
+                    ));
+
+                }
+            }
+        };
+        request.open('GET', url);
+        request.setRequestHeader('x-api-key', '32isbi7Lug22v8CKogygf5b2EZwpdFhS2OotvWem');
+        request.send();
+    }
+
+    getJSONAsync(api_link);
+
+    function Beer(name, image_url, type) {
+        this.name = name,
+            this.image_url = image_url,
+            this.type = type
+    }
+
+    function print() {
+        var table = document.getElementById("table");
+        table.innerHTML = "";
+        console.log(from);
+
+        for (let index = from; index < to; index++) {
+            elem = aBeer[index];
+            console.log(from);
+
+            var tr = document.createElement("tr");
+            var tempIndex = document.createElement("th");
+            tempIndex.innerHTML = index;
+            var tempName = document.createElement("th");
+            tempName.innerHTML = aBeer[index].name;
+            var thImg = document.createElement("th");
+            var tempImg = document.createElement("IMG");
+            tempImg.setAttribute("src", aBeer[index].image_url);
+            tempImg.setAttribute("width", "150px");
+            tempImg.setAttribute("height", "150px");
+
+            thType = document.createElement("th");
+
+            tempType = document.createElement("button");
+            tempType.innerHTML = "show type";
+            tempType.setAttribute("onclick", `alert("selected type " + aBeer[${index}].type)`)
+
+            table.appendChild(tr);
+            tr.appendChild(tempIndex);
+            tr.appendChild(tempName);
+            tr.appendChild(thImg);
+            thImg.appendChild(tempImg);
+            tr.appendChild(thType);
+            thType.appendChild(tempType);
+
+            if (index >= aBeer.length - 1) {
+                from = 0;
+                to = 50;
+                counter = 0;
+                break;
+            }
+
+        }
+
+        if (counter != 0) {
+            from += 50;
+            to += 50;
+        }
+        counter = 1;
+    }
+    setTimeout(print, 1000);
+</script>
+
+</html>
